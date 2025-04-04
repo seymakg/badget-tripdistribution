@@ -10,8 +10,3 @@ If you want to run the application without downloading source code, you can foll
 
 ![image](https://github.com/user-attachments/assets/5810ea0d-b765-4ccb-80ea-435e34513c5b)
 
-# Save location
-
-By default, result saving directory is set for "D:\GameTheorySaves\" directory. If you want to update that location you can follow below steps:
-
-1. 
