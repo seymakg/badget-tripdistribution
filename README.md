@@ -10,3 +10,4 @@ If you want to run the application without downloading source code, you can foll
 
 ![image](https://github.com/user-attachments/assets/5810ea0d-b765-4ccb-80ea-435e34513c5b)
 
+1. To see usage instructions download [HowToUse.docx](https://github.com/seymakg/badger-tripdistribution/blob/master/HowToUse.docx) file.
