@@ -94,6 +94,17 @@ namespace Badger.Algebra.Matrix
             return onesArray;
         }
 
+        public static double[] Zeros(int m)
+        {
+            double[] onesArray = new double[m];
+            for (int i = 0; i < m; i++)
+            {
+                onesArray[i] = 0;
+            }
+
+            return onesArray;
+        }
+
         public static double[,] GetSubset(double[,] matrix, Tuple<int, int> start, Tuple<int, int> count)
         {
 

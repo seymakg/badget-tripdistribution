@@ -50,6 +50,7 @@ namespace Badger.Win
             this.tbTrip = new System.Windows.Forms.TabPage();
             this.gvTrip = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.denemeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gvCost)).BeginInit();
             this.tabControl.SuspendLayout();
@@ -114,7 +115,7 @@ namespace Badger.Win
             // 
             this.miUploadExcel.Image = ((System.Drawing.Image)(resources.GetObject("miUploadExcel.Image")));
             this.miUploadExcel.Name = "miUploadExcel";
-            this.miUploadExcel.Size = new System.Drawing.Size(184, 26);
+            this.miUploadExcel.Size = new System.Drawing.Size(122, 22);
             this.miUploadExcel.Text = "Excel File";
             this.miUploadExcel.Click += new System.EventHandler(this.miUploadExcel_Click);
             // 
@@ -129,7 +130,8 @@ namespace Badger.Win
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miGravity,
-            this.miGameTheory});
+            this.miGameTheory,
+            this.denemeToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -137,14 +139,14 @@ namespace Badger.Win
             // miGravity
             // 
             this.miGravity.Name = "miGravity";
-            this.miGravity.Size = new System.Drawing.Size(197, 22);
+            this.miGravity.Size = new System.Drawing.Size(180, 22);
             this.miGravity.Text = "Gravity";
             this.miGravity.Click += new System.EventHandler(this.miGravity_Click);
             // 
             // miGameTheory
             // 
             this.miGameTheory.Name = "miGameTheory";
-            this.miGameTheory.Size = new System.Drawing.Size(197, 22);
+            this.miGameTheory.Size = new System.Drawing.Size(180, 22);
             this.miGameTheory.Text = "Game Theory";
             this.miGameTheory.Click += new System.EventHandler(this.miGameTheory_Click);
             // 
@@ -234,6 +236,13 @@ namespace Badger.Win
             this.panel1.Size = new System.Drawing.Size(815, 532);
             this.panel1.TabIndex = 7;
             // 
+            // denemeToolStripMenuItem
+            // 
+            this.denemeToolStripMenuItem.Name = "denemeToolStripMenuItem";
+            this.denemeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.denemeToolStripMenuItem.Text = "Deneme";
+            this.denemeToolStripMenuItem.Click += new System.EventHandler(this.denemeToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -282,6 +291,7 @@ namespace Badger.Win
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripMenuItem saveLocationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem denemeToolStripMenuItem;
     }
 }
 

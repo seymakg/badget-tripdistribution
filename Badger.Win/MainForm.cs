@@ -21,6 +21,8 @@ using Newtonsoft.Json;
 using System.IO;
 using log4net;
 using System.Configuration;
+using Badger.Solvers.Ipopt;
+using Cureos.Numerics;
 
 namespace Badger.Win
 {
@@ -178,6 +180,29 @@ namespace Badger.Win
             GravitySolver gravitySolver = new GravitySolver();
             IGravitySolution solution = gravitySolver.Solve(TripMatrix, CostMatrix);
 
+            // Save similar to game theory
+            int zoneCount = CostMatrix.GetLength(0);
+            int matrixLength = zoneCount * zoneCount;
+            int paramLength = (zoneCount * 2) + matrixLength;
+            double[] arrayA = MatrixHelper.Zeros(zoneCount);
+            double[] arrayB = MatrixHelper.Zeros(zoneCount);
+            double[,] matrixLike = solution.Trips;
+            double[] solutionValues = new double[paramLength];
+
+            Array.Copy(arrayA, 0, solutionValues, 0, zoneCount);
+            Array.Copy(arrayB, 0, solutionValues, zoneCount, zoneCount);
+
+            for (int i = 0; i < zoneCount; i++)
+            {
+                for (int j = 0; j < zoneCount; j++)
+                {
+                    solutionValues[(zoneCount * 2) + zoneCount * i + j] = matrixLike[i, j];
+                }
+            }
+
+            GameTheorySolution gravitySolution = new GameTheorySolution(NonlinearResult.LocalOptimal, 0, solutionValues);
+            SaveSolution(gravitySolution, DateTime.Now.ToString("yyyyMMddHHmmss"), 0);
+
             ResultViewer resultViewer = new ResultViewer();
             resultViewer.Show();
 
@@ -209,6 +234,7 @@ namespace Badger.Win
 
         private void miGameTheory_Click(object sender, EventArgs e)
         {
+            previousResult = null;
             if (TripMatrix == null || CostMatrix == null)
             {
                 MessageBox.Show("Please load data first.");
@@ -305,7 +331,7 @@ namespace Badger.Win
 
             try
             {
-                string[] files = Directory.GetFiles(getSavePath(), "*.json");
+                string[] files = Directory.GetFiles(getSaveDirectory(), "*.json");
                 if (files != null && files.Length > 0)
                 {
                     var lastResultFile = files.OrderByDescending(x => x).First();
@@ -331,16 +357,8 @@ namespace Badger.Win
             if (e.Solution != null)
             {
                 logger.Info("Solving completed");
-                var solutionText = JsonConvert.SerializeObject(e.Solution);
-                logger.Debug($"NonlinearResult: {Enum.GetName(typeof(NonlinearResult), e.Solution.NonlinearResult)} - Value: {string.Format("{0:0.0000}", e.Solution.SolutionValue)}");
 
-                string filePath = string.Format(getSavePath(), solver.InstanceUniqueId, solver.RetryCount.ToString().PadLeft(4, '0'));
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-
-                File.WriteAllText(filePath, solutionText);
+                SaveSolution(e.Solution, solver.InstanceUniqueId, solver.RetryCount);
 
                 logger.Debug("Save completed.");
                 if (e.Solution.NonlinearResult == NonlinearResult.Interrupted)
@@ -365,6 +383,20 @@ namespace Badger.Win
             {
                 logger.Error("No actual solution after solving completed.");
             }
+        }
+
+        private void SaveSolution(GameTheorySolution solution, string instanceUniqueId, int retryCount)
+        {
+            var solutionText = JsonConvert.SerializeObject(solution);
+            logger.Debug($"NonlinearResult: {Enum.GetName(typeof(NonlinearResult), solution.NonlinearResult)} - Value: {string.Format("{0:0.0000}", solution.SolutionValue)}");
+
+            string filePath = string.Format(getSavePath(), instanceUniqueId, retryCount.ToString().PadLeft(4, '0'));
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            File.WriteAllText(filePath, solutionText);
         }
 
         private string GetLatestResult(GameTheorySolution solution)
@@ -475,6 +507,48 @@ namespace Badger.Win
             string saveFolder = Properties.Settings.Default["FileSaveLocation"].ToStringOrEmpty();
             string savePath = saveFolder + @"Save_{0}_{1}.json";
             return savePath;
+        }
+
+        private string getSaveDirectory()
+        {
+            string saveFolder = Properties.Settings.Default["FileSaveLocation"].ToStringOrEmpty();
+            return saveFolder;
+        }
+
+        private void denemeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /* create the IpoptProblem */
+            MyIpoptProblem p = new MyIpoptProblem();
+
+            /* allocate space for the initial point and set the values */
+            double[] x = { 1.0, 5.0, 5.0, 1.0 };
+
+            IpoptReturnCode status;
+
+            using (var problem = new IpoptProblem(p._n, p._x_L, p._x_U, p._m, p._g_L, p._g_U, p._nele_jac, p._nele_hess,
+                p.eval_f, p.eval_g, p.eval_grad_f, p.eval_jac_g, p.eval_h))
+            {
+                /* Set some options.  The following ones are only examples,
+                   they might not be suitable for your problem. */
+                //problem.AddOption("derivative_test", "second-order");
+                //problem.AddOption("tol", 1e-7);
+                //problem.AddOption("mu_strategy", "adaptive");
+                //problem.AddOption("output_file", "hs071.txt");
+                problem.SetIntermediateCallback(this.IntermediateCallback);
+                /* solve the problem */
+                double obj;
+                status = problem.SolveProblem(x, out obj, null, null, null, null);
+            }
+
+            //Console.WriteLine("{0}{0}Optimization return status: {1}{0}{0}", Environment.NewLine, status);
+
+            for (int i = 0; i < 4; ++i) Console.WriteLine("x[{0}]={1}", i, x[i]);
+
+        }
+
+        private bool IntermediateCallback(IpoptAlgorithmMode alg_mod, int iter_count, double obj_value, double inf_pr, double inf_du, double mu, double d_norm, double regularization_size, double alpha_du, double alpha_pr, int ls_trials)
+        {
+            return true;
         }
     }
 }
