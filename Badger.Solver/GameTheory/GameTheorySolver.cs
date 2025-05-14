@@ -45,6 +45,7 @@ namespace Badger.Solvers.GameTheory
                 initials = initialValues;
             }
 
+            initials = initials.Select(x => Math.Truncate(x * 1000) / 1000).ToArray();
             var result = SolveInternal(initials);
             double[] variables = new double[variableCount];
             for (int j = 0; j < variableCount; j++)

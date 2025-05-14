@@ -15,7 +15,7 @@ namespace Badger.Solvers.GameTheory
 
         public GameTheorySolution(NonlinearResult nonlinearResult, double solutionValue, double[] paramaterValues)
         {
-            this.paramaterValues = paramaterValues;
+            this.paramaterValues = paramaterValues.Select(x => Math.Truncate(x * 1000) / 1000).ToArray();
             this.solutionValue = solutionValue;
             this.nonlinearResult = nonlinearResult;
         }
